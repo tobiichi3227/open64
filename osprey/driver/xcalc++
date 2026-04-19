@@ -18,7 +18,7 @@ CC1PLUS       = "cc1plus42"
 WGEN          = "wgen42"
 INLINE        = "inline"
 BE            = "be"
-PP_OPTS       = "-D__GNUC_MINOR__=0 -D__GNUC__=10 -D_GLIBCXX_USE_MAKE_INTEGER_SEQ"
+PP_OPTS       = "-std=c++17"
 CC1PLUS_OPTS  = "-Wall -fcxx-openmp -fmastiff -finline-functions-called-once -finline-functions -msse2 -dx -quiet -fpreprocessed -fbuiltin -dumpbase"
 INLINE_OPTS   = "-PHASE:v=off:x=off -PHASE:l:w:c -sw -O3 -TARG:abi=n64 -LANG:cxx_openmp=on -INLINE:all"
 BE_OPTS       = "-PHASE:v=off:x=off -PHASE:l:w:c -G8 -sw -TARG:abi=n64 -LANG:cxx_openmp=on -LANG:=ansi_c -TARG:processor=wolfdale"
@@ -350,10 +350,10 @@ def preprocess(logger: logging.Logger, opts: List[str], f: str) -> bool:
     cmd = opts + PP_OPTS.split() + ["-E", f, "-o", dot_ii]
 
     if LOG:
-        info = "preprocessing: " + GCC + " " + " ".join(i for i in cmd)
+        info = "preprocessing: " + MAPCLANG + " " + " ".join(i for i in cmd)
         logger.info(info)
 
-    process = subprocess.Popen([GCC] + cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = subprocess.Popen([MAPCLANG] + cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = process.communicate()
 
     if process.returncode != 0:
