@@ -24,7 +24,7 @@ CC1PLUS_OPTS  = "-Wall -fcxx-openmp -fmastiff -finline-functions-called-once -fi
 INLINE_OPTS   = "-PHASE:v=off:x=off -PHASE:l:w:c -sw -O3 -TARG:abi=n64 -LANG:cxx_openmp=on -INLINE:all"
 BE_OPTS       = "-PHASE:v=off:x=off -PHASE:l:w:c -G8 -sw -TARG:abi=n64 -LANG:cxx_openmp=on -LANG:=ansi_c -TARG:processor=wolfdale"
 W2LL_OPTS     = "-disable_trace"
-LLC_OPTS      = "--march=riscv64 -target-abi lp64d --asm-verbose --debugger-tune=gdb" 
+LLC_OPTS      = "--march=riscv64 -target-abi lp64d --asm-verbose --debugger-tune=gdb"
 MAPCLANG_OPTS = "-cc1 -emit-llvm -triple x86_64-unknown-linux-gnu -D__clang__ -internal-isystem /usr/local/mastiff/include/clang/c++ -D__GNUC__=4 -D__GNUC_MINOR__=2 -internal-isystem /usr/local/mastiff/include -internal-isystem /usr/local/mastiff/include/clang -internal-isystem /usr/local/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -O3 -D__OPTIMIZE__ -xc++"
 USE_GCC       = "-gcc"
 
@@ -81,21 +81,21 @@ def report_err(logger: logging.Logger, cond: bool, msg: str):
 
 
 def set_env():
-    global GCC 
+    global GCC
     global W2LL
     global LLC
     global MAPCLANG
     global WGEN
     global INLINE
     global BE
-    global XCALCC_HOME 
-    global LD_LIBRARY_PATH 
+    global XCALCC_HOME
+    global LD_LIBRARY_PATH
 
     check_exec()
 
     machine = platform.machine()
     if machine == "x86_64":
-        GCC = "riscv64-linux-gnu-g++" 
+        GCC = "riscv64-linux-gnu-g++"
 
     bin_path = os.path.abspath(which("xcalcc").rstrip("xcalcc"))
     LD_LIBRARY_PATH = os.path.join(bin_path, os.pardir, PHASEPATH)
@@ -302,7 +302,7 @@ def collect_options(logger: logging.Logger, argv: List[str]) -> Tuple[List[str],
 
     if ASM_MODE == True:
         NEED_LINK = False
-    
+
     if PIC == True:
         STATIC = False
 
@@ -329,8 +329,8 @@ def is_obj(f: str) -> bool:
 
 
 def is_src(f: str) -> bool:
-    src = [".c", ".cxx", ".cpp", ".c++", 
-           ".cc", ".C", ".h", ".hpp", 
+    src = [".c", ".cxx", ".cpp", ".c++",
+           ".cc", ".C", ".h", ".hpp",
            ".hh", ".hxx", ".H", ".h++",
            ".ii", ".i", ".ixx", ".ipp",
            ".inl", ".txx", ".tpp", ".tpl"]
@@ -350,7 +350,7 @@ def preprocess(logger: logging.Logger, opts: List[str], f: str) -> bool:
     if is_ii(f):
         return True
 
-    dot_ii = rm_suffix(f.split('/')[-1]) + ".ii" 
+    dot_ii = rm_suffix(f.split('/')[-1]) + ".ii"
     # cmd = opts + PP_OPTS.split() + ["-fno-exceptions", "-E", f, "-o", dot_ii]
     cmd = opts + PP_OPTS.split() + ["-E", f, "-o", dot_ii]
 
@@ -365,12 +365,12 @@ def preprocess(logger: logging.Logger, opts: List[str], f: str) -> bool:
         logger.error(err.decode().strip())
         return False
     else:
-        return True 
-    
+        return True
+
 
 def cc1plus(logger: logging.Logger, f: str) -> bool:
-    dot_ii = rm_suffix(f.split('/')[-1]) + ".ii" 
-    spin = rm_suffix(f.split('/')[-1]) + ".spin" 
+    dot_ii = rm_suffix(f.split('/')[-1]) + ".ii"
+    spin = rm_suffix(f.split('/')[-1]) + ".spin"
 
     opts = CC1PLUS_OPTS.split()
     if STD != "":
@@ -391,12 +391,12 @@ def cc1plus(logger: logging.Logger, f: str) -> bool:
         logger.error(err.decode().strip())
         return False
     else:
-        return True 
+        return True
 
 
 def wgen(logger: logging.Logger, f: str) -> bool:
-    spin = rm_suffix(f.split('/')[-1]) + ".spin" 
-    dot_B = rm_suffix(f.split('/')[-1]) + ".B" 
+    spin = rm_suffix(f.split('/')[-1]) + ".spin"
+    dot_B = rm_suffix(f.split('/')[-1]) + ".B"
     cmd = ["-fS," + spin, "-fB," + dot_B]
 
     if LOG:
@@ -411,12 +411,12 @@ def wgen(logger: logging.Logger, f: str) -> bool:
         logger.error(err.decode().strip())
         return False
     else:
-        return True 
+        return True
 
 
 def mapclang(logger: logging.Logger, opts: List[str], f: str) -> bool:
-    dot_B  = rm_suffix(f.split('/')[-1]) + ".B" 
-    dot_ii = rm_suffix(f.split('/')[-1]) + ".ii" 
+    dot_B  = rm_suffix(f.split('/')[-1]) + ".B"
+    dot_ii = rm_suffix(f.split('/')[-1]) + ".ii"
     opts = list(filter(lambda x: not x.startswith("-l"), opts))
     cmd = MAPCLANG_OPTS.split() + opts + [dot_ii, "-o", dot_B]
 
@@ -425,7 +425,7 @@ def mapclang(logger: logging.Logger, opts: List[str], f: str) -> bool:
 
     if VERIFY != "":
         cmd.append(VERIFY)
-    
+
     if STD != "":
         cmd.append(STD)
 
@@ -448,12 +448,12 @@ def mapclang(logger: logging.Logger, opts: List[str], f: str) -> bool:
 
 
 def inline(logger: logging.Logger, f: str) -> bool:
-    dot_B = rm_suffix(f.split('/')[-1]) + ".B" 
-    dot_I = rm_suffix(f.split('/')[-1]) + ".I" 
+    dot_B = rm_suffix(f.split('/')[-1]) + ".B"
+    dot_I = rm_suffix(f.split('/')[-1]) + ".I"
     cmd = INLINE_OPTS.split()
     if DEBUG == True:
         cmd.append("-g2")
-    cmd = cmd + DEFAULT_OPTS + ["-fB," + dot_B, "-fI," + dot_I, f] 
+    cmd = cmd + DEFAULT_OPTS + ["-fB," + dot_B, "-fI," + dot_I, f]
 
     if LOG:
         info = INLINE + " " + " ".join(i for i in cmd)
@@ -466,13 +466,13 @@ def inline(logger: logging.Logger, f: str) -> bool:
         logger.error(err.decode().strip())
         return False
     else:
-        return True 
+        return True
 
 
 def be(logger: logging.Logger, f: str) -> bool:
    #  -fB,a.I -s -fs,a.s /media/psf/Home/code/xc5/mastiff_build/a.c
-    dot_I = rm_suffix(f.split('/')[-1]) + ".I" 
-    dot_s = rm_suffix(f.split('/')[-1]) + ".s" 
+    dot_I = rm_suffix(f.split('/')[-1]) + ".I"
+    dot_s = rm_suffix(f.split('/')[-1]) + ".s"
     cmd = BE_OPTS.split()
     if DEBUG == True:
         cmd.append("-g2")
@@ -489,7 +489,7 @@ def be(logger: logging.Logger, f: str) -> bool:
         logger.error(err.decode().strip())
         return False
     else:
-        return True 
+        return True
 
 
 def front_end(logger: logging.Logger, opts: List[str], files: List[str]) -> List[str]:
@@ -502,7 +502,7 @@ def front_end(logger: logging.Logger, opts: List[str], files: List[str]) -> List
         opts.remove(USE_GCC)
 
     for f in files:
-        name = rm_suffix(f.split('/')[-1]) 
+        name = rm_suffix(f.split('/')[-1])
         cmd = opts + [f]
         msg = "xcalc++: faild to compile " + f
 
@@ -532,11 +532,11 @@ def front_end(logger: logging.Logger, opts: List[str], files: List[str]) -> List
         ret = inline(logger, f)
         if report_err(logger, ret, msg) == False:
             continue
-        
+
         ret = be(logger, f)
         if report_err(logger, ret, msg) == False:
             continue
-        
+
         res.append(name)
 
     return res
@@ -601,7 +601,7 @@ def llc(logger: logging.Logger, opts: List[str], files: List[str], outfile: str)
     elif PIC == True:
         opts.append("--relocation-model=pic")
 
-    if (NEED_LINK == False) and (no_outfile == False): 
+    if (NEED_LINK == False) and (no_outfile == False):
         if len(files) > 1:
             logger.error("cannot specify '-o' with multiple files: " + str(files))
 
@@ -609,7 +609,7 @@ def llc(logger: logging.Logger, opts: List[str], files: List[str], outfile: str)
         if (NEED_LINK == True) or (no_outfile == True):
             outfile = f.rstrip(".ll").rstrip(".B").rstrip(".I").rstrip(".O") + suffix
 
-        cmd = opts + [f, "-o", outfile] 
+        cmd = opts + [f, "-o", outfile]
 
         if LOG:
             info = LLC + " " + " ".join(i for i in cmd)
@@ -639,7 +639,7 @@ def link(logger: logging.Logger, opts: List[str], files: List[str], outfile: str
 
     if outfile == "":
         outfile = "a.out"
-    
+
     cmd = cmd + ["-o", outfile] + files
 
     for i in opts:
@@ -665,7 +665,7 @@ def compile(logger: logging.Logger, opts: List[str], files: List[str], output: s
 
     ch.setFormatter(Formatter())
     logger.addHandler(ch)
-    
+
     src = list(filter(is_src, files))
     obj = list(filter(is_obj, files))
     unk = list(filter(lambda x : not (is_src(x) or is_obj(x)), files))
