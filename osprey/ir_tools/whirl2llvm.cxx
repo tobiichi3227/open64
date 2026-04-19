@@ -499,6 +499,17 @@ typedef llvm::StructType      LVSTRUCTTY;
 // =============================================================================
 static const char *OPERATOR2name(OPERATOR opr) { return OPERATOR_name(opr); }
 
+llvm::LoadInst *CreateTypedLoad(LVBUILDER *Lvbuilder, LVVAL *addr, LVTY *fallbackTy, const char *msg = "") {
+  LVTY *ty = fallbackTy;
+  if (auto gv = llvm::dyn_cast<llvm::GlobalVariable>(addr)) {
+    ty = gv->getValueType();
+  } else if (auto ai = llvm::dyn_cast<llvm::AllocaInst>(addr)) {
+    ty = ai->getAllocatedType();
+  }
+  FmtAssert(ty != nullptr, ("CreateTypedLoad: null type"));
+  return Lvbuilder->CreateLoad(ty, addr, msg);
+}
+
 // =============================================================================
 // =============================================================================
 //
@@ -4168,7 +4179,7 @@ WHIRL2llvm::WN2llvmSymAct(WN *wn, ACTION act, LVVAL *rhs)
           ld_ty = Wty2llvmty(WN_desc(wn), 0);
         }
         if (offset != 0) Gen_displacement(wn, &gvar);
-        auto load = Lvbuilder()->CreateLoad(ld_ty, gvar);
+        auto load = CreateTypedLoad(Lvbuilder(), gvar, ld_ty);
         load->setAlignment(llvm::Align(TY_align(WN_ty(wn))));
         return load;
       }
@@ -4254,7 +4265,7 @@ WHIRL2llvm::WN2llvmSymAct(WN *wn, ACTION act, LVVAL *rhs)
           }
           FmtAssert(opr == OPR_LDID, ("WN2llvmSymAct: WN node should be LDID"));
           LVTY *ld_ty = Wty2llvmty(WN_desc(wn), 0);
-          auto load = Lvbuilder()->CreateLoad(ld_ty, arg_addr);
+          auto load = CreateTypedLoad(Lvbuilder(), arg_addr, ld_ty);
           load->setAlignment(llvm::Align(TY_align(WN_ty(wn))));
           return load;
         }
@@ -4304,7 +4315,7 @@ WHIRL2llvm::WN2llvmSymAct(WN *wn, ACTION act, LVVAL *rhs)
         case ACT_LD: {
           LVTY *ld_ty = Wty2llvmty(WN_desc(wn), 0);
           if (offset != 0) Gen_displacement(wn, &gvar);
-          auto load = Lvbuilder()->CreateLoad(ld_ty, gvar);
+          auto load = CreateTypedLoad(Lvbuilder(), gvar, ld_ty);
           load->setAlignment(llvm::Align(TY_align(WN_ty(wn))));
           return load;
         }
@@ -4349,7 +4360,7 @@ WHIRL2llvm::WN2llvmSymAct(WN *wn, ACTION act, LVVAL *rhs)
           ld_ty = Wty2llvmty(WN_desc(wn), 0);
         }
 #endif
-        auto load = Lvbuilder()->CreateLoad(ld_ty, addr);
+        auto load = CreateTypedLoad(Lvbuilder(), addr, ld_ty);
         load->setAlignment(llvm::Align(TY_align(WN_ty(wn))));
         return load;
       } else {
@@ -4429,7 +4440,7 @@ WHIRL2llvm::WN2llvmSymAct(WN *wn, ACTION act, LVVAL *rhs)
     } else if (act == ACT_LD) {
       FmtAssert(opr == OPR_LDID, ("WN2llvmSymAct: WN node should be LDID"));
       LVTY *ld_ty = Wty2llvmty(WN_desc(wn), 0);
-      auto load = Lvbuilder()->CreateLoad(ld_ty, reg.second);
+      auto load = CreateTypedLoad(Lvbuilder(), reg.second, ld_ty);
       load->setAlignment(llvm::Align(TY_align(WN_ty(wn))));
       return load;
     } else { // ACT_STR
@@ -5050,7 +5061,7 @@ LVVAL *WHIRL2llvm::EXPR2llvm(WN *wn, WN *parent) {
 
     // 3. Create a load instruction to perform the actual iload
     LVTY *ld_ty = Wty2llvmty(WN_desc(wn), 0);
-    auto val = Lvbuilder()->CreateLoad(ld_ty, base, ST_name(WN_st(WN_kid0(wn))));
+    auto val = CreateTypedLoad(Lvbuilder(), base, ld_ty, ST_name(WN_st(WN_kid0(wn))));
     val->setAlignment(llvm::Align(TY_align(WN_ty(wn))));
 
     res = HandleLoadImplicitCast(wn, val, lv_rtype, MTYPE_is_signed(WN_desc(wn)));
@@ -5082,7 +5093,7 @@ LVVAL *WHIRL2llvm::EXPR2llvm(WN *wn, WN *parent) {
     // LVPRINT(base, "iload base");
     // 3. Create a load instruction to perform the actual iload
     LVTY *ld_ty = Wty2llvmty(desc, MTYPE_To_TY(desc));
-    auto val = Lvbuilder()->CreateLoad(ld_ty, base);
+    auto val = CreateTypedLoad(Lvbuilder(), base, ld_ty);
     val->setAlignment(llvm::Align(TY_align(WN_ty(wn))));
 
     res = HandleLoadImplicitCast(wn, val, lv_rtype, MTYPE_is_signed(WN_desc(wn)));
@@ -5498,7 +5509,7 @@ WHIRL2llvm::STMT2llvm(WN *wn, W2LBB *lvbb)
     LVVAL *tmp = Lvbuilder()->CreateGEP(jmp_table->getValueType(), jmp_table, idxs);
 
     // 2. load jmp index
-    auto cond = Lvbuilder()->CreateLoad(GetLVPtrTy(), tmp);
+    auto cond = CreateTypedLoad(Lvbuilder(), tmp, GetLVPtrTy());
 
     // get target blocks
     auto indirectbr = Lvbuilder()->CreateIndirectBr(cond, num_entries);
@@ -5733,7 +5744,7 @@ WHIRL2llvm::STMT2llvm(WN *wn, W2LBB *lvbb)
             // load the field from return value
             auto ptr = Lvbuilder()->CreateGEP(Lvbuilder()->getInt8Ty(), ret_val, Lvbuilder()->getInt64(fld_ofst));
             // INFO: the type size of PREG maybe larger than the type size of field!!!
-            auto field = Lvbuilder()->CreateLoad(pname->getAllocatedType(), ptr);
+            auto field = CreateTypedLoad(Lvbuilder(), ptr, pname->getAllocatedType());
             Lvbuilder()->CreateStore(field, pname);
             fld_ofst += MTYPE_byte_size(RETURN_INFO_mtype(ret_info, i));
           }
@@ -5867,7 +5878,7 @@ WHIRL2llvm::STMT2llvm(WN *wn, W2LBB *lvbb)
 
         while (prev) {
           auto cur_reg = Get_preg(prev);
-          auto cur_elem = Lvbuilder()->CreateLoad(cur_reg.first, cur_reg.second);
+          auto cur_elem = CreateTypedLoad(Lvbuilder(), cur_reg.second, cur_reg.first);
           elems.push_back(cur_elem);
           if (prev != tail) prev = WN_next(prev);
           else break;
@@ -5888,14 +5899,14 @@ WHIRL2llvm::STMT2llvm(WN *wn, W2LBB *lvbb)
           ofst += MTYPE_byte_size(RETURN_INFO_mtype(ret_info, i));
         }
 
-        LVVAL *ret_struct = Lvbuilder()->CreateLoad(tmp_struct->getAllocatedType(), tmp_struct);
+        LVVAL *ret_struct = CreateTypedLoad(Lvbuilder(), tmp_struct, tmp_struct->getAllocatedType());
         Lvbuilder()->CreateRet(ret_struct);
 
       } else if (ret_type->isVoidTy()) {
         Lvbuilder()->CreateRetVoid();
       } else {
         auto ret_preg = Get_preg(prev);
-        ret_val = Lvbuilder()->CreateLoad(ret_preg.first, ret_preg.second);
+        ret_val = CreateTypedLoad(Lvbuilder(), ret_preg.second, ret_preg.first);
 
         bool is_signed = MTYPE_is_signed(WN_desc(prev));
         ret_val = CastToTargetType(prev, ret_val, ret_type, is_signed);
