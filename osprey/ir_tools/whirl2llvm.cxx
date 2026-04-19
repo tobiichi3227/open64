@@ -2160,6 +2160,24 @@ public:
             *rhs = CreateExt(*rhs, (*lhs)->getType());
           }
         }
+      } else if (lhs_ty->isPointerTy() && rhs_ty->isPointerTy()) {
+        if (IsWNCmp(wn)) {
+          if (lhs_ty != rhs_ty) {
+            *rhs = Lvbuilder()->CreateBitCast(*rhs, lhs_ty);
+          }
+          return;
+        } else {
+          *lhs = Lvbuilder()->CreatePtrToInt(*lhs, Lvbuilder()->getInt64Ty());
+          *rhs = Lvbuilder()->CreatePtrToInt(*rhs, Lvbuilder()->getInt64Ty());
+          return;
+        }
+      } else if (lhs_ty->isAggregateType() || rhs_ty->isAggregateType()) {
+        Is_Trace(Tracing_enabled, (TFile, "HandleBinaryDifferentType aggregate mismatch:\n"));
+        LVPRINT(*lhs, "lhs");
+        LVPRINT(*rhs, "rhs");
+        LVPRINT(lhs_ty, "lhs_ty");
+        LVPRINT(rhs_ty, "rhs_ty");
+        FmtAssert(FALSE, ("HandleBinaryDifferentType: aggregate used in scalar binary op"));
       } else {
         LVPRINT(*lhs,"Binary lhs type");
         LVPRINT(*rhs,"Binary rhs type");
@@ -2169,6 +2187,7 @@ public:
   }
 
   BOOL        Gen_displacement(WN *wn, LVVAL **base);
+  LVVAL      *Load_field_from_addr(WN *wn, LVVAL *base_addr, TY_IDX base_ty_idx);
   LVVAL      *Gen_displacement_by_offset(WN *wn, LVVAL **base, INT offset);
   void        Create_bin_operands(WN *wn, LVVAL** lhs, LVVAL** rhs, BOOL tymatch = FALSE) {
     const char *oprname = OPERATOR2name(WN_operator(wn));
@@ -4172,6 +4191,10 @@ WHIRL2llvm::WN2llvmSymAct(WN *wn, ACTION act, LVVAL *rhs)
       switch (act) {
       case ACT_LD: {
         FmtAssert(opr == OPR_LDID, ("WN2llvmSymAct: WN node should be LDID"));
+        if (WN_field_id(wn) != 0) {
+            LVVAL *addr = gavr;
+            return Load_field_from_addr(wn, addr, ST_type(st));
+        }
         LVTY *ld_ty = nullptr;
         if (auto gv = llvm::dyn_cast<llvm::GlobalVariable>(gvar)) {
           ld_ty = gv->getValueType();
@@ -4264,6 +4287,9 @@ WHIRL2llvm::WN2llvmSymAct(WN *wn, ACTION act, LVVAL *rhs)
                      (TFile, "WN2llvmSymAct gen load for Formal %s passed on stack\n", varname));
           }
           FmtAssert(opr == OPR_LDID, ("WN2llvmSymAct: WN node should be LDID"));
+          if (WN_field_id(wn) != 0) {
+            return Load_field_from_addr(wn, arg_addr, ST_type(st));
+          }
           LVTY *ld_ty = Wty2llvmty(WN_desc(wn), 0);
           auto load = CreateTypedLoad(Lvbuilder(), arg_addr, ld_ty);
           load->setAlignment(llvm::Align(TY_align(WN_ty(wn))));
@@ -4314,6 +4340,10 @@ WHIRL2llvm::WN2llvmSymAct(WN *wn, ACTION act, LVVAL *rhs)
         }
         case ACT_LD: {
           LVTY *ld_ty = Wty2llvmty(WN_desc(wn), 0);
+          if (WN_field_id(wn) != 0) {
+            LVVAL *addr = gvar;
+            return Load_field_from_addr(wn, addr, ST_type(st));
+          }
           if (offset != 0) Gen_displacement(wn, &gvar);
           auto load = CreateTypedLoad(Lvbuilder(), gvar, ld_ty);
           load->setAlignment(llvm::Align(TY_align(WN_ty(wn))));
@@ -4350,6 +4380,9 @@ WHIRL2llvm::WN2llvmSymAct(WN *wn, ACTION act, LVVAL *rhs)
         return addr;
       } else if (act == ACT_LD) {
         LVVAL *addr = var.second;
+        if (WN_field_id(wn) != 0) {
+          return Load_field_from_addr(wn, addr, ST_type(st));
+        }
         if (offset != 0) Gen_displacement(wn, &addr);
         FmtAssert(opr == OPR_LDID, ("WN2llvmSymAct: WN node should be LDID"));
         LVTY *ld_ty = Wty2llvmty(WN_desc(wn), 0);
@@ -4941,6 +4974,35 @@ FLDINFO GetFieldId(WN *wn, TY_IDX struct_ty_idx, WN_OFFSET offset) {
   }
 
   return fld_info;
+}
+
+LVVAL *WHIRL2llvm::Load_field_from_addr(WN *wn, LVVAL *base_addr, TY_IDX base_ty_idx) {
+  FmtAssert(base_addr && base_addr->getType()->isPointerTy(),
+            ("Load_field_from_addr: base_addr must be pointer"));
+
+  LVTY *ld_ty = Wty2llvmty(WN_desc(wn), 0);
+
+  FLDINFO finfo = GetFieldId(wn, base_ty_idx, WN_offset(wn));
+  INT64 field_ofst = 0;
+  if (finfo.Field_id() != 0) {
+    field_ofst = FLD_ofst(finfo.Fld_handle());
+    if (finfo.New_offset() > 0) field_ofst += finfo.New_offset();
+  } else {
+    field_ofst = WN_offset(wn);
+  }
+
+  LVTY *i8_ty = Lvbuilder()->getInt8Ty();
+  LVTY *i8_ptr_ty = i8_ty->getPointerTo();
+
+  LVVAL *addr = base_addr;
+  if (addr->getType() != i8_ptr_ty) {
+    addr = Lvbuilder()->CreateBitCast(addr, i8_ptr_ty);
+  }
+
+  LVVAL *field_addr = Lvbuilder()->CreateGEP(i8_ty, addr, Lvbuilder()->getInt64(field_ofst));
+  llvm::LoadInst *load = Lvbuilder()->CreateLoad(ld_ty, field_addr);
+  load->setAlignment(llvm::Align(TY_align(WN_ty(wn))));
+  return load;
 }
 
 BOOL WHIRL2llvm::Gen_displacement(WN *wn, LVVAL **base) {
