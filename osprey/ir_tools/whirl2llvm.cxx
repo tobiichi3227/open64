@@ -4943,17 +4943,21 @@ FLDINFO GetFieldId(WN *wn, TY_IDX struct_ty_idx, WN_OFFSET offset) {
   return fld_info;
 }
 
-BOOL
-WHIRL2llvm::Gen_displacement(WN *wn, LVVAL **base) {
-  FmtAssert((*base)->getType()->isOpaquePointerTy(),
-    ("Gen_displacement: Type of the base should be OpaquePointerTy"));
-
+BOOL WHIRL2llvm::Gen_displacement(WN *wn, LVVAL **base) {
   INT offset = WN_offset(wn);
-  LVTY *i8_ty = Lvbuilder()->	getInt8Ty();
+  LVTY *i8_ty = Lvbuilder()->getInt8Ty();
+  LVTY *i8_ptr_ty = i8_ty->getPointerTo();
 
-  // tmp = (i8*)(*base) + offset
-  auto target_addr = Lvbuilder()->CreateGEP(i8_ty, *base, Lvbuilder()->getInt64(offset));
-  LVPRINT(target_addr, "target_addr");
+  LVVAL *addr = *base;
+  FmtAssert(addr->getType()->isPointerTy(),
+            ("Gen_displacement: base must be pointer type"));
+
+  if (addr->getType() != i8_ptr_ty) {
+    addr = Lvbuilder()->CreateBitCast(addr, i8_ptr_ty);
+  }
+
+  llvm::Value *idx = Lvbuilder()->getInt64(offset);
+  llvm::Value *target_addr = Lvbuilder()->CreateGEP(i8_ty, addr, idx);
 
   *base = target_addr;
   return TRUE;
