@@ -4161,7 +4161,12 @@ WHIRL2llvm::WN2llvmSymAct(WN *wn, ACTION act, LVVAL *rhs)
       switch (act) {
       case ACT_LD: {
         FmtAssert(opr == OPR_LDID, ("WN2llvmSymAct: WN node should be LDID"));
-        LVTY *ld_ty = Wty2llvmty(WN_desc(wn), 0);
+        LVTY *ld_ty = nullptr;
+        if (auto gv = llvm::dyn_cast<llvm::GlobalVariable>(gvar)) {
+          ld_ty = gv->getValueType();
+        } else {
+          ld_ty = Wty2llvmty(WN_desc(wn), 0);
+        }
         if (offset != 0) Gen_displacement(wn, &gvar);
         auto load = Lvbuilder()->CreateLoad(ld_ty, gvar);
         load->setAlignment(llvm::Align(TY_align(WN_ty(wn))));
