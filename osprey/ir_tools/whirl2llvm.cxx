@@ -1595,8 +1595,13 @@ public:
 
   LVGLBVAR   *Create_glbvar(LVTY *lvty, const char *name, llvm::GlobalValue::LinkageTypes linkTy) {
     std::string Name = std::string(name);
-    _module->getOrInsertGlobal(Name, lvty);
-    LVGLBVAR *gvar = _module->getNamedGlobal(Name);
+    if (auto *g = _module->getNamedGlobal(Name)) {
+      FmtAssert(g->getValueType() == lvty, ("global %s type mismatch", name));
+      gvar = g;
+    } else {
+      _module->getOrInsertGlobal(Name, lvty);
+      gvar = _module->getNamedGlobal(Name);
+    }
     gvar->setLinkage(linkTy);
     Put_glbvar(name, gvar);
     return gvar;
