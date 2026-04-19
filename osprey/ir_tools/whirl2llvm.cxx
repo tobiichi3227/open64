@@ -2233,8 +2233,11 @@ public:
 
   LVSTRUCTTY *Get_glb_ctors_elem_ty() {
     // create element type -- { i32, ptr, ptr }
-    LVTY *ptr = GetLVPtrTy();
-    std::vector<LVTY*> elems { LVTY::getInt32Ty(Context()), ptr, ptr };
+    LVTY *i32 = LVTY::getInt32Ty(Context());
+    LVTY *fn_ty = llvm::FunctionType::get(LVTY::getVoidTy(Context()), false);
+    LVTY *fn_ptr_ty = llvm::PointerType::get(fn_ty, 0);
+    LVTY *data_ptr_ty = GetLVPtrTy();
+    std::vector<LVTY*> elems { i32, fn_ptr_ty, data_ptr_ty };
     return LVSTRUCTTY::get(Context(), elems);
   }
 
