@@ -1096,7 +1096,7 @@ private:
 
 public:
   LVPTRTY    *GetLVPtrTy() {
-    return LVPTRTY::get(Context(), 0);
+    return llvm::Type::getInt8PtrTy(Context());
   }
 
   INT         Get_preg4parm_idx(INT reg) {
