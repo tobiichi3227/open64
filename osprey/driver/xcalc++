@@ -610,7 +610,7 @@ def llc(logger: logging.Logger, opts: List[str], files: List[str], outfile: str)
             info = LLC + " " + " ".join(i for i in cmd)
             logger.info(info)
 
-        process = subprocess.Popen([LLC] + cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen([LLC] + ['-opaque-pointers'] + cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = process.communicate()
 
         if ASM_MODE and outfile == "-":
