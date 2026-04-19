@@ -304,7 +304,7 @@ ifeq ($(CLANG_VERSION), 11)
   LLVM_LIBS += -lLLVMBitstreamReader -lLLVMDemangle -lLLVMRemarks -lLLVMFrontendOpenMP
 endif
 ifeq ($(CLANG_VERSION), 14)
-  LLVM_LIBS += -lLLVMTextAPI -lLLVMObject -lLLVMDebugInfoDWARF -lLLVMBitstreamReader -lLLVMDemangle -lLLVMRemarks -lLLVMFrontendOpenMP
+  LLVM_LIBS += -lLLVMTextAPI -lLLVMObject -lLLVMDebugInfoDWARF -lLLVMBitstreamReader -lLLVMDemangle -lLLVMRemarks -lLLVMFrontendOpenMP -lz -ltinfo -lclangARCMigrate -lclangStaticAnalyzerCheckers -lclangStaticAnalyzerFrontend -lclangStaticAnalyzerCore -lclangAST -lclangASTMatchers -lclangCrossTU -lclangToolingCore -lclangIndex
 endif
 ifeq ($(CLANG_VERSION), 15)
   LLVM_LIBS += -lclangExtractAPI -lclangIndex -lclangSupport -lLLVMTextAPI -lLLVMObject -lLLVMDebugInfoDWARF \

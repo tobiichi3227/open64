@@ -158,7 +158,7 @@ static void *hugetlbfs_morecore(ptrdiff_t increment)
                 if ((long long) delta + mapsize > (long long) hugepages_heap_limit * blocksize) {
                     DEBUG("size %ld exceeds huge page limit %ld\n",
                           delta + mapsize, hugepages_heap_limit);
-                    __morecore = &__default_morecore;
+                    // __morecore = &__default_morecore;
                     DEBUG("brk=0x%lx\n",(unsigned long) sbrk(0));
                     return NULL;
                 }
@@ -380,7 +380,7 @@ void __hugetlbfs_setup_morecore(void)
 		heapaddr = (unsigned long)sbrk(0);
 		heapaddr = hugetlbfs_next_addr(heapaddr);
 	}
-#else	
+#else
         else if (! heap_starts_in_bd) {
             if ((heapbase > 0) && (hugepage_heap_stype == hugepage_elf_stype)) {
                 heapaddr = (unsigned long) heapbase;
@@ -404,7 +404,7 @@ void __hugetlbfs_setup_morecore(void)
 	    DEBUG("setup_morecore(): heapaddr = 0x%lx\n", heapaddr);
 
 	    heaptop = heapbase = (void *)heapaddr;
-	    __morecore = &hugetlbfs_morecore;
+	    // __morecore = &hugetlbfs_morecore;
 #ifdef OPEN64_MOD
 	}
 #endif
@@ -432,7 +432,7 @@ void __hugetlbfs_setup_morecore(void)
         /* we always want to use our morecore, not ordinary mmap().
          * This doesn't appear to prohibit malloc() from falling back
          * to mmap() if we run out of hugepages. */
-        
+
         mallopt(M_MMAP_MAX, 0);
 }
 
@@ -440,15 +440,15 @@ void __hugetlbfs_setup_morecore(void)
 /*  Customize heap allocation, interface to the compiler.
  *
  *  Environment variable overrides command line option in setting limit of huge pages to use
- *  for the heap. 
+ *  for the heap.
  *
  *    Bit mask of input attr:
  *    bit 0: unused
- *    bit 1: unused 
- *    bit 2: unused 
+ *    bit 1: unused
+ *    bit 2: unused
  *    bit 3: heap 2M page
  *    bit 4: heap 1G page
- *    bit 5: unused 
+ *    bit 5: unused
  *    bit 6: unused
  */
 
@@ -478,16 +478,16 @@ void  __setup_hugepage(int l_limit, int attr)
 
     if (hugepages_avail > 0) {
         char *env;
-        
+
         env = getenv("HUGETLB_LIMIT");
-        
+
         if ( env ) {
             long n = atol(env);
-            if( (n >= 0) && (n < hugepages_avail) ) 
+            if( (n >= 0) && (n < hugepages_avail) )
                 hugepages_heap_limit = n;
         }
         else if ((l_limit >= 0) && (l_limit < hugepages_avail))
-            hugepages_heap_limit = l_limit;        
+            hugepages_heap_limit = l_limit;
 
         if (hugepage_heap_stype == hugepage_elf_stype)
             hugepages_heap_limit -= hugepages_seg_total;
@@ -512,7 +512,7 @@ void __hugetlbfs_setup_bd_morecore(void)
 
 	blocksize = gethugepagesize();
         heap_starts_in_bd = 1;
-	__morecore = &hugetlbfs_morecore;
+	// __morecore = &hugetlbfs_morecore;
 
         mallopt(M_TRIM_THRESHOLD, -1);
 	top_pad = blocksize / 2;
