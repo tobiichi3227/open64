@@ -160,7 +160,7 @@ static SEVERITY_DESCRIPTOR Severities[] = {
     {ES_CONFORMANCE_M,	"!!! ", "[SML],[M]"},
     {ES_ERRBENIGN,	"### ", "Error"},
     {ES_ERRPHASE,	"### ", "Error"},
-    {ES_ERRABORT,	"### ", "Error"},    
+    {ES_ERRABORT,	"### ", "Error"},
 };
 
 /* Access functions: */
@@ -247,7 +247,7 @@ static void  /* SC 2022 - so that we do not mix up with rest of BE's name */
 w2ll_Fail_FmtAssertion (const char *fmt, ... )
 {
   va_list vp;
-  
+
   INT dlevel = ES_ERRABORT;  /* Severity level */
   INT mlevel = dlevel;
   char hmsg[512], emsg[512];
@@ -256,7 +256,7 @@ w2ll_Fail_FmtAssertion (const char *fmt, ... )
 #if 0  // SC - 2022
   /* Count error: */
   ++Error_Counts[dlevel];
-  
+
   /* Prepare header line: */
   loc = sprintf ( &hmsg[0], "%s%s%s", SEV_symbol(mlevel),
       "Compiler ", SEV_name(mlevel) );
@@ -268,7 +268,7 @@ w2ll_Fail_FmtAssertion (const char *fmt, ... )
   }
   sprintf ( &hmsg[loc], ":\n" );
 #else
-  int do_traceback = false;  
+  int do_traceback = false;
 #endif // SC - 2022
 
   /* Prepare main error message: */
@@ -294,12 +294,12 @@ w2ll_Fail_FmtAssertion (const char *fmt, ... )
 
   /* Abort: */
   // SC - 2022
-#if 0  // SC - 2022  
+#if 0  // SC - 2022
   Signal_Cleanup( 0 );
   exit(RC_INTERNAL_ERROR);
-#else  
+#else
   exit(1);
-#endif // SC - 2022  
+#endif // SC - 2022
 } // w2ll_Fail_FmtAssertion
 
 static void
@@ -353,7 +353,7 @@ Set_trace_file ( char *filename )  /* Name of new trace file */
   Non_stdout_TFile = FALSE;
 }
 
-static FILE *Get_trace_file(void) 
+static FILE *Get_trace_file(void)
 {
   if (TFile_internal == NULL)
     TFile_internal = stdout;
@@ -504,7 +504,7 @@ static const char *OPERATOR2name(OPERATOR opr) { return OPERATOR_name(opr); }
 //
 // W2LBB: wrap the llvm::IRBuilder
 //        WN* for W2LBB to WN*
-//        label name, extracted from WN* or fabricated for fallthrough 
+//        label name, extracted from WN* or fabricated for fallthrough
 //
 // =============================================================================
 // =============================================================================
@@ -592,7 +592,7 @@ public:
     _lvdi_file = f;
   }
 
-  DST_FILE_NAME* Dst_File_Name(void) { 
+  DST_FILE_NAME* Dst_File_Name(void) {
     return _dst_file_name;
   }
 };
@@ -634,7 +634,7 @@ void LVPRINT(const T &n, std::string msg = "", bool err = false) {
 // _ori_call: original call node, collected before lowering.
 // _lo_call: call not after the lowering.
 // _actual: a vector of stid nodes that store value of actual arguments; these
-// actual arguments are used to create the actual argumen tlist for llvm's call.  
+// actual arguments are used to create the actual argumen tlist for llvm's call.
 //
 // Method of using RNA information:
 // step 1: RNAITER rit = whirl2llvm->Find_rna(call_node)
@@ -718,7 +718,7 @@ public:
   }
 };
 
-typedef std::vector<RNA> RNAVEC; 
+typedef std::vector<RNA> RNAVEC;
 typedef RNAVEC::iterator RNAITER;
 
 // =============================================================================
@@ -768,10 +768,10 @@ public:
   void        Build_w2bblist(WN *entry) ;   // by traversing PU by entry
   void        Put_labnam(const char *ln, W2LBB *p){
     FmtAssert(ln, ("ACCESS VIOLATION"));
-    FmtAssert(_lab2bb.find(ln) == _lab2bb.end(), ("Put_labnam: %s already exists", ln));    
+    FmtAssert(_lab2bb.find(ln) == _lab2bb.end(), ("Put_labnam: %s already exists", ln));
     _lab2bb[ln] = p;
   }
-  void        Add_preg4parm(INT r1, INT r2) { 
+  void        Add_preg4parm(INT r1, INT r2) {
     FmtAssert(! Is_preg4parm(r1), ("Add_preg4parm: Preg %d already exist.", r1));
     _preg4parm.push_back(std::make_pair(r1, r2));
     _parm_order.push_back(r2);
@@ -836,8 +836,8 @@ public:
   TYALC       Get_locvar(const char *nm)    {
     FmtAssert(nm, ("ACCESS VIOLATION"));
     if (_locvars.find(nm) != _locvars.end())
-      return _locvars[nm]; 
-    else 
+      return _locvars[nm];
+    else
       return std::make_pair(nullptr, nullptr);
   }
   void        Mutate_locvar(const char *nm, LVALC *p, LVTY *ty) {
@@ -970,7 +970,7 @@ public:
   void        Last_label(INT n)     { _last_label = n;      }
   BOOL        Has_fwd_tyref(void)   { return _has_fwd_tyref;}
   void        Has_fwd_tyref(BOOL V) { _has_fwd_tyref = V;   }
-  void        Has_fwd_tyref(BOOL V, UINT idx) { _has_fwd_tyref = V;   
+  void        Has_fwd_tyref(BOOL V, UINT idx) { _has_fwd_tyref = V;
     Is_Trace(Tracing_enabled, (TFile, "set ForwardTypeRef [%d] %d\n", V, idx));
   }
   BOOL        Ign_fwd_tyref(void)   { return _ignore_fwd_tyref; }
@@ -1315,7 +1315,7 @@ public:
   TY_IDX      GetFuncType(WN *wn);
   LVFUNCTY   *Get_function_ty(WN *wn, SIGNVEC *sign_info = NULL);
 
-  // The struct consists of cxx empty struct members and other padding area, 
+  // The struct consists of cxx empty struct members and other padding area,
   // whose contents are not defined.
   BOOL Is_struct_content_padding(TY_IDX ty, INT32 offset, INT32 len) {
     FLD_IDX fld_idx = Ty_Table[ty].Fld();
@@ -1369,7 +1369,7 @@ public:
       parm_name_idx++;
 
       TY_IDX formal_ty = WN_type(idname_wn);
-      if (use_parm_name && Mload_ty(formal_ty)) { 
+      if (use_parm_name && Mload_ty(formal_ty)) {
         // may need to set additional parm name pattern matches
         // how it is saved in create_mload_formal()
         while (parm_name_idx < Parm_name().size() &&
@@ -1405,7 +1405,7 @@ public:
     WN *idname_wn = WN_kid(puwn, argcount);
     while (WN_opcode(idname_wn) == OPC_IDNAME) {
 
-      if (Mload_ty(WN_type(idname_wn))) { 
+      if (Mload_ty(WN_type(idname_wn))) {
         return TRUE;
       }
 
@@ -1493,9 +1493,9 @@ public:
       func_wn = (wn == NULL)? Cur_func() : wn;
       func_tyidx = ST_type(WN_st(func_wn));
     }
-    
+
     std::string funcname(ST_name(func_st));
- 
+
     auto link = GetFuncLinkageType(func_st);
 
     llvm::Function *func = llvm::Function::Create(lvfuncty, link, funcname, _module);
@@ -1510,7 +1510,7 @@ public:
       }
     }
     Set_func_attr(func_tyidx, func, sign_info);
-    
+
     return func;
   }
 
@@ -1550,7 +1550,7 @@ public:
   LVVAL      *Get_glbvar(const char *nm) {
     FmtAssert(nm, ("ACCESS VIOLATION"));
     if (_glbvars.find(nm) != _glbvars.end())
-      return _glbvars[nm]; 
+      return _glbvars[nm];
     else
       return nullptr;
   }
@@ -1566,7 +1566,7 @@ public:
     Is_Trace(Tracing_enabled, (TFile, "Insert TY %s [%d] to lvty %p\n", TY_name(tyidx), tyidx, lvty));
     _wty2lvty.insert(std::pair<unsigned int, llvm::Type*>(tyidx, lvty));
   }
-  
+
   LVTY       *Get_wty2lvty(UINT32 idx, TY_IDX tyidx) {
     //    printf("Get idx %d\n", idx);
     if (_wty2lvty.find(idx) != _wty2lvty.end())
@@ -1575,15 +1575,15 @@ public:
       return Insert_ty_entry(idx, tyidx);
     }
   }
-  
+
   void        Set_wty2lvty(UINT32 tyidx, LVTY *lvty) {
     Is_Trace(Tracing_enabled, (TFile, "Set TY %s [%d] to lvty %p\n", TY_name(tyidx), tyidx, lvty));
- 
+
     FmtAssert(_wty2lvty.find(tyidx) != _wty2lvty.end(), ("Set_wty2lvty: %d doesn't exist", tyidx));
     _wty2lvty[tyidx] = lvty;
 
   }
-  
+
   void        Put_labnam(const char *ln, W2LBB *p)       { _builder->Put_labnam(ln, p);     }
   W2LBB      *Get_labnam(const char *ln)                 { return _builder->Get_labnam(ln); }
   TYALC       Get_preg(WN *wn, BOOL is_load = FALSE, TYPE_ID mtype = 0, TY_IDX ty_idx = 0);
@@ -1601,7 +1601,7 @@ public:
     Put_glbvar(name, gvar);
     return gvar;
   }
-  
+
   TYALC       Create_locvar(TYPE_ID tyid, TY_IDX idx, LVVAL *arr_size, const char *name, UINT64 index = 0) {
     Is_Trace(Tracing_enabled, (TFile, "Create_locvar for variable %s, index in ST_tab is %llu\n", name, index));
     LVTY *ty = Wty2llvmty(tyid, idx);
@@ -1618,10 +1618,10 @@ public:
     auto cur_insert_point = Lvbuilder()->GetInsertBlock();
     if (auto last_alloc = _builder->LastAlloc()) {
       Lvbuilder()->SetInsertPoint(last_alloc);
-    } 
+    }
     else {   // aggregate locvar creation in the Entry BB
       LVINST *last_inst = Lventry()->empty() ? nullptr : &(Lventry()->back());
-      if (last_inst && 
+      if (last_inst &&
           (llvm::isa<llvm::BranchInst>(last_inst) ||
            llvm::isa<llvm::ReturnInst>(last_inst) ||
            llvm::isa<llvm::SwitchInst>(last_inst) ||
@@ -1682,7 +1682,7 @@ public:
       return Fabricate_labnam("L", labnum);
   }
 
-  void        Put_w2lbb(const char *labname, W2LBB *w2lbb) { 
+  void        Put_w2lbb(const char *labname, W2LBB *w2lbb) {
     FmtAssert(labname != NULL, ("WHIRL2llvm::Put_w2lbb, labname shall be non-null"));
     char *tmpname = strdup(labname);
     W2LBB *retv = Get_labnam(labname);
@@ -1697,19 +1697,19 @@ public:
     LVBB *lvbb = LVBB::Create(Context(), labname, Cur_lvfunc());
     if (lvbb == NULL)
       return NULL;
-    
+
     // create enclosure for lvbb
     W2LBB *retv = new W2LBB(lvbb, labname);
-    
+
     // create lvblkaddr for lvbb
-    retv->Blkaddr(LVBLKADDR::get(Cur_lvfunc(), lvbb)); 
-    
+    retv->Blkaddr(LVBLKADDR::get(Cur_lvfunc(), lvbb));
+
     // establish labname to w2lbb mapping
     Put_w2lbb(labname, retv);
     return retv;
   }
 
-  W2LBB      *Get_w2lbb(const char *labname) { 
+  W2LBB      *Get_w2lbb(const char *labname) {
     W2LBB *retv = Get_labnam(labname);
     if (retv) { // already exist
       return retv;
@@ -1739,7 +1739,7 @@ public:
       }
       case OPR_ISTORE: {
         if (WN_operator(WN_kid1(wn)) == OPR_LDA) // ugly hack
-          load_addr_ty = WN_ty(WN_kid1(wn)); 
+          load_addr_ty = WN_ty(WN_kid1(wn));
         else
           load_addr_ty = WN_ty(wn);
         load_addr_ty = (Ty_Table[load_addr_ty]).Pointed();  // from KIND_POINTER
@@ -1768,8 +1768,8 @@ public:
     if (TY_kind(ty) != KIND_ARRAY) return false;
 
     // get element type
-    TY_IDX e_ty_idx = ty.Etype(); 
-    
+    TY_IDX e_ty_idx = ty.Etype();
+
     return (TY_kind(e_ty_idx) == KIND_STRUCT);
   }
 
@@ -1895,7 +1895,7 @@ public:
 
       FmtAssert(rhs_ty->isIntegerTy(), ("CreateExt: rhs should be integer type"));
       FmtAssert(lhs_ty->getIntegerBitWidth() < rhs_ty->getIntegerBitWidth(), ("CreateExt: lhs width should be shorter than lhs"));
-      if (is_signed) 
+      if (is_signed)
         return Lvbuilder()->CreateSExt(lhs, rhs_ty);
       else
         return Lvbuilder()->CreateZExt(lhs, rhs_ty);
@@ -1947,7 +1947,7 @@ public:
 
     enum val_ty_type { Int_ty, Ptr_ty, Flt_ty, Other_ty };
     val_ty_type ty_class;
-    if (val_ty->isIntegerTy()) 
+    if (val_ty->isIntegerTy())
       ty_class = Int_ty;
     else if (val_ty->isFloatingPointTy())
        ty_class = Flt_ty;
@@ -2012,15 +2012,15 @@ public:
                    target_ty->getTypeID(), val_ty->getTypeID()));
       }
       return val;
-      break;      
+      break;
     }
     case Other_ty: {
       LVPRINT(val, "val");
       LVPRINT(val_ty, "val_ty");
       LVPRINT(target_ty, "target_ty");
-      FmtAssert(FALSE, ("CastToTargetType: can't handle %d type now", val_ty->getTypeID()));      
+      FmtAssert(FALSE, ("CastToTargetType: can't handle %d type now", val_ty->getTypeID()));
       return nullptr;
-      break; 
+      break;
     }
     default:
       FmtAssert(FALSE, ("CastToTargetType: Unexpected ty in enum"));
@@ -2053,7 +2053,7 @@ public:
     for (int i = 0; i < arglist.size(); i++) {
       auto formal_ty = lvfuncty->getParamType(i);
       Is_True(arglist[i], ("Handle_arg_diff_ty: actual arg (count %d) is null", i));
-      
+
       // FIXME: handle the case of function pointer
       // bool is_signed = lvfunc->getArg(i)->hasSExtAttr();
 
@@ -2079,7 +2079,7 @@ public:
   inline bool IsWNCmp(WN *wn) { return OPERATOR_is_compare(WN_operator(wn));  }
 
   LVVAL      *LvPtr2Int(LVVAL *ptr) {
-    if (ptr->getType()->isPointerTy()) 
+    if (ptr->getType()->isPointerTy())
       return Lvbuilder()->CreatePtrToInt(ptr, Lvbuilder()->getInt64Ty());
     else if (ptr->getType()->isIntegerTy())
       return ptr;
@@ -2322,7 +2322,7 @@ public:
 // =============================================================================
 LVTY *BuiltinTy2llvm(TYPE_ID mtype, LVCONTEXT &ctx) {
   switch(mtype) {
-    case MTYPE_B: 
+    case MTYPE_B:
     case MTYPE_I1:
     case MTYPE_I2:
     case MTYPE_I4:
@@ -2674,7 +2674,7 @@ void FixForwardTypeRef::operator() (UINT idx, TY *ty) const {
         if (whirl2llvm->DoesMapHasThisType(rettype_idx)) {
           lv_ret_ty = whirl2llvm->Wty2llvmty(TY_mtype(rettype_idx), rettype_idx);
         } else {
-          Is_Trace(Tracing_enabled, (TFile, " set true Func [%d]\n", idx));  
+          Is_Trace(Tracing_enabled, (TFile, " set true Func [%d]\n", idx));
           whirl2llvm->Has_fwd_tyref(TRUE);
           return;
         }
@@ -2722,12 +2722,12 @@ void FixForwardTypeRef::operator() (UINT idx, TY *ty) const {
         fields.push_back(lv_ty);
         fld = FLD_next (fld);
       }
-      
+
       auto struct_ty = llvm::cast<llvm::StructType>(res->second);
       struct_ty->setBody(fields);
       return;
     }
-  
+
     default: return;
   }
 }
@@ -2833,7 +2833,7 @@ template<> LVOPR Get_flvopr<OPR_LT, FPUNIT>() { return LVOPR::FCMP_OLT; }
 template<> LVOPR Get_flvopr<OPR_GE, FPUNIT>() { return LVOPR::FCMP_OGE; }
 template<> LVOPR Get_flvopr<OPR_LE, FPUNIT>() { return LVOPR::FCMP_OLE; }
 
-template<OPERATOR _OPR> 
+template<OPERATOR _OPR>
 struct GEN_CMP {
   WHIRL2llvm *_wl;
   TYPE_ID     _tyid;
@@ -2881,7 +2881,7 @@ WHIRL2llvm::CreateCompare(WN *wn, LVVAL *lhs, LVVAL *rhs)
     cmp = CreateCMP(lhs, rhs, GEN_CMP<OPR_GE>(this, tyid)); // after refactor
     break;
   }
-  defautl: 
+  defautl:
     FmtAssert(FALSE, ("CreateCompare: not supported compare operator %s", OPERATOR2name(opr)));
   }
   FmtAssert(cmp != nullptr, ("CreateCompare: create %s instruction failed", OPERATOR2name(opr)));
@@ -2957,7 +2957,7 @@ WHIRL2llvm::CreateUnary(WN *wn)
     break;
   }
   case OPR_LNOT: {
-    FmtAssert(opnd->getType()->isIntegerTy(), 
+    FmtAssert(opnd->getType()->isIntegerTy(),
       ("CreateUnary: the type of operand should be boolean type"));
     if (!opnd->getType()->isIntegerTy(1)) {
       opnd = Lvbuilder()->CreateTrunc(opnd, Lvbuilder()->getInt1Ty());
@@ -3013,7 +3013,7 @@ WHIRL2llvm::CreateBinary(WN *wn)
   case OPR_MAX: {
     LVVAL *cmp = nullptr;
     if (lhs->getType()->isIntegerTy()) {
-      cmp = MTYPE_is_signed(WN_desc(wn)) ? 
+      cmp = MTYPE_is_signed(WN_desc(wn)) ?
               Lvbuilder()->CreateICmpSGT(lhs, rhs) :
               Lvbuilder()->CreateICmpUGT(lhs, rhs);
     } else if (lhs->getType()->isFloatingPointTy()) {
@@ -3058,7 +3058,7 @@ WHIRL2llvm::CreateBinary(WN *wn)
 }
 
 // =============================================================================
-// If the size of the mtype (used in load/store) is the same as the size of 
+// If the size of the mtype (used in load/store) is the same as the size of
 // the struct, return the struct's type, otherwise, return a predefined
 // type corresponding to mtype.
 // =============================================================================
@@ -3072,7 +3072,7 @@ struct_memop_type (TYPE_ID mtype, TY_IDX struct_type)
 
 
 // =============================================================================
-// The struct consists of cxx empty struct members and other padding area, 
+// The struct consists of cxx empty struct members and other padding area,
 // whose contents are not defined.
 // =============================================================================
 static BOOL is_struct_content_padding(TY_IDX ty, INT32 offset, INT32 len)
@@ -3081,7 +3081,7 @@ static BOOL is_struct_content_padding(TY_IDX ty, INT32 offset, INT32 len)
   if (fld_idx == 0) return TRUE;
   do {
     FLD_HANDLE fld(fld_idx);
-    if (TY_kind(FLD_type(fld)) != KIND_STRUCT) 
+    if (TY_kind(FLD_type(fld)) != KIND_STRUCT)
     {
       INT32 myoffset, myend;
       myoffset = FLD_ofst(fld);
@@ -3097,7 +3097,7 @@ static BOOL is_struct_content_padding(TY_IDX ty, INT32 offset, INT32 len)
     fld_idx++;
   } while (1);
   return TRUE;
-} 
+}
 
 
 WNPAIR
@@ -3108,10 +3108,10 @@ WHIRL2llvm::Load_mload_actual(WN* mload, PLOC& ploc)
 
   Setup_Struct_Output_Parameter_Locations(mloadTY);
   ploc = Get_Struct_Output_Parameter_Location(ploc);
- 
+
   WN    *firstld = NULL;
   WN    *secondld = NULL;
-  INT32  size, mloadOffset = 0; 
+  INT32  size, mloadOffset = 0;
   WN    *mloadSize = WN_kid1(mload);
 
   if (WN_operator(mloadSize) != OPR_INTCONST) {
@@ -3183,9 +3183,9 @@ WHIRL2llvm::Load_mload_actual(WN* mload, PLOC& ploc)
         reg = MTYPE_To_PREG(type);
       }
 
-      if (PLOC_size(ploc) < MTYPE_size_reg(type) && type == MTYPE_F8 && 
+      if (PLOC_size(ploc) < MTYPE_size_reg(type) && type == MTYPE_F8 &&
           is_struct_content_padding(mloadTY, mloadOffset, PLOC_size(ploc))) {
-        // void MSTRUCT in SSE register, simply ignore 
+        // void MSTRUCT in SSE register, simply ignore
         mloadOffset += PLOC_size(ploc);
         ploc = Get_Struct_Output_Parameter_Location(ploc);
         continue;
@@ -3203,7 +3203,7 @@ WHIRL2llvm::Load_mload_actual(WN* mload, PLOC& ploc)
 
         //load = WN_IloadLdid(quantum, mloadOffset,
         //                    struct_memop_type (quantum, mloadTY), preg,
-        //                    addrN); 
+        //                    addrN);
         load = WN_Iload(quantum, mloadOffset,
                         struct_memop_type (quantum, mloadTY), WN_COPY_Tree(addr));
 
@@ -3215,7 +3215,7 @@ WHIRL2llvm::Load_mload_actual(WN* mload, PLOC& ploc)
       else {
         //load = WN_IloadLdid(type, mloadOffset,
         //                    struct_memop_type (type, mloadTY), preg,
-        //                    addrN); 
+        //                    addrN);
         load = WN_Iload(type, mloadOffset,
                         struct_memop_type (type, mloadTY), WN_COPY_Tree(addr));
       }
@@ -3339,7 +3339,7 @@ struct COLLECT_VALUE {
 struct COLLECT_LVTY {
   LVTYVEC    *lvtyvec;
   COLLECT_LVTY(LVTYVEC *ltvec) : lvtyvec(ltvec) {}
- 
+
  void operator() (WN *wn, WHIRL2llvm *wl) const {
     auto val = wl->Wty2llvmty(WN_rtype(wn), WN_ty(wn));
     lvtyvec->push_back(val);
@@ -3349,7 +3349,7 @@ struct COLLECT_LVTY {
 struct COLLECT_RNA {
   WHIRL2llvm *_wl;
   COLLECT_RNA(WHIRL2llvm *wl) : _wl(wl) {}
- 
+
   void operator() (WN *wn) const {
     OPERATOR opr = WN_operator(wn);
     if (OPERATOR_is_call(opr)) {
@@ -3363,7 +3363,7 @@ struct COLLECT_RNA {
 struct GEN_JMPTBL {
   WHIRL2llvm *_wl;
   GEN_JMPTBL(WHIRL2llvm *wl) : _wl(wl) {}
- 
+
  void operator() (WN *wn) const {
     OPERATOR opr = WN_operator(wn);
     if (opr == OPR_XGOTO) {
@@ -3375,7 +3375,7 @@ struct GEN_JMPTBL {
 void
 WHIRL2llvm::Create_mload_formal(LVTYVEC& argstype, TY_IDX idx, PLOC& ploc, char *name, SIGNVEC *info_list)
 {
-  INT32   size, offset = 0; 
+  INT32   size, offset = 0;
   Setup_Struct_Input_Parameter_Locations(idx);
   ploc = Get_Struct_Input_Parameter_Location(ploc);
   size = TY_size(Ty_Table[idx]);
@@ -3409,7 +3409,7 @@ WHIRL2llvm::Create_mload_formal(LVTYVEC& argstype, TY_IDX idx, PLOC& ploc, char 
         type = MTYPE_F4;
         reg = MTYPE_To_PREG(type);
       }
-      if (PLOC_size(ploc) < MTYPE_size_reg(type) && type == MTYPE_F8 && 
+      if (PLOC_size(ploc) < MTYPE_size_reg(type) && type == MTYPE_F8 &&
           Is_struct_content_padding(idx, offset, PLOC_size(ploc))) {
         // void MSTRUCT in SSE register, simply ignore
         offset += PLOC_size(ploc);
@@ -3496,7 +3496,7 @@ WHIRL2llvm::Set_func_attr(TY_IDX putyidx, LVFUNC *func, SIGNVEC *sign_list)
   for (auto i = 0; i < sign_list->size(); i++) {
     if ((*sign_list)[i] == EXT_FLG::NONE) continue;
     func->addParamAttr(i,
-                       ((*sign_list)[i] == EXT_FLG::SEXT) ? 
+                       ((*sign_list)[i] == EXT_FLG::SEXT) ?
                        LVATTR::SExt :
                        LVATTR::ZExt);
   }
@@ -3509,7 +3509,7 @@ LVTY*
 WHIRL2llvm::Create_ret_type(TY_IDX putyidx, LVTYVEC& argstype, SIGNVEC *info_list, PLOC *ploc)
 {
   TY_IDX ret_idx = TY_ret_type(putyidx);
-  
+
   // return via rax/rdx or xmm0/xmm1 by default
   LVTY  *ret_type = Wty2llvmty(TY_mtype(ret_idx), ret_idx);
 
@@ -3527,7 +3527,7 @@ WHIRL2llvm::Create_ret_type(TY_IDX putyidx, LVTYVEC& argstype, SIGNVEC *info_lis
 
       // add extend info which must match the argstype size
       if (info_list != NULL)
-        info_list->insert(info_list->begin(), 
+        info_list->insert(info_list->begin(),
                           Get_ext_flag(fake_param_ty, TY_mtype(ret_idx)));
     }
     ret_type = llvm::Type::getVoidTy(Context());
@@ -3612,7 +3612,7 @@ WHIRL2llvm::Handle_intrn_call(WN *wn) {
 
   LVCALL *call = Lvbuilder()->CreateCall(lvfuncty, func, arglist);
   SetCallInstAttrs(call, func);
-  
+
   // OPR_INTRINSIC_CALL is a STMT, but OPR_INTRINSIC is an EXPR
   if (is_stmt) {
     // Create the name of PREG that store value from return register
@@ -3794,7 +3794,7 @@ WHIRL2llvm::Ref_func_retreg(WN *wn) {
 }
 
 // =============================================================================
-// Match behavior of wn_lower.cxx/lower_return_ldid 
+// Match behavior of wn_lower.cxx/lower_return_ldid
 // =============================================================================
 TYPE_ID
 WHIRL2llvm::Adjust_return_ldid_mtype(TYPE_ID mtype, PREG_NUM& pregno)
@@ -3911,7 +3911,7 @@ WHIRL2llvm::Get_function_ty(WN *wn, SIGNVEC *sign_info)
     }
     break;
   }
-  // TODO: handle vararg 
+  // TODO: handle vararg
 
   if (rettype == nullptr)
     rettype = Wty2llvmty(TY_mtype(ret_tyidx), ret_tyidx);
@@ -3988,7 +3988,7 @@ BOOL
 WHIRL2llvm::Is_float_parm_reg(WN *ldstr)
 {
   OPERATOR opr = WN_operator(ldstr);
- 
+
   if ((OPERATOR_is_scalar_load(opr) ||
        OPERATOR_is_scalar_store(opr)) &&
       WN_st(ldstr)->sym_class == CLASS_PREG) {
@@ -4022,11 +4022,11 @@ WHIRL2llvm::Is_rhs_inparm_ld(WN *stmt)
   OPERATOR opr = WN_operator(data);
   if (opr == OPR_CVTL || opr == OPR_CVT)  // copyin might have CVT/CVTL
     data = WN_kid0(data);
-  
+
   if (!OPERATOR_is_scalar_load(WN_operator(data)))
     return FALSE;
 
-  // return FALSE if the rhs of current statement is not inparm 
+  // return FALSE if the rhs of current statement is not inparm
   if (!Is_int_parm_reg(data) && !Is_float_parm_reg(data))
     return FALSE;
 
@@ -4038,7 +4038,7 @@ WHIRL2llvm::Is_rhs_inparm_ld(WN *stmt)
   WN *prevstmt = WN_prev(stmt);
   if (prevstmt == NULL || WN_operator(prevstmt) == OPR_COMMENT)  // 1st STID in function
     return TRUE;
-      
+
   if (WN_operator(prevstmt) != OPR_STID)
     return FALSE;
 
@@ -4124,9 +4124,9 @@ WHIRL2llvm::Save_to_inparm(WN *wn, const char *varname, LVVAL *rhs, INT parmidx)
 // =============================================================================
 //
 // Function object to be callable for generating variable load
-// 
+//
 // =============================================================================
-LVVAL* 
+LVVAL*
 WHIRL2llvm::WN2llvmSymAct(WN *wn, ACTION act, LVVAL *rhs)
 {
   FmtAssert(WN_has_sym(wn), ("WN2llvmSymAct wn doesn't has ST field"));
@@ -4271,7 +4271,7 @@ WHIRL2llvm::WN2llvmSymAct(WN *wn, ACTION act, LVVAL *rhs)
         }
       } // case ACT_STR
       } // switch act
-    } // end of FORMAL 
+    } // end of FORMAL
     case SCLASS_PSTATIC: {
       std::string name_idx(varname);
       std::string pu_idx = std::to_string(ST_pu(WN_st(Cur_func())));
@@ -4487,7 +4487,7 @@ struct ST2llvm {
       auto zero_aggregate = llvm::ConstantAggregateZero::get(lvty);
       gvar->setInitializer(zero_aggregate);
     } else if (lvty->isFloatingPointTy()) {
-      // TODO: handle negative zero 
+      // TODO: handle negative zero
       auto float_zero = llvm::ConstantFP::get(lvty, 0.0);
       gvar->setInitializer(float_zero);
     } else if (st->sym_class == CLASS_VAR) {
@@ -4887,14 +4887,14 @@ FLDINFO GetFieldId(WN *wn, TY_IDX struct_ty_idx, WN_OFFSET offset) {
        *      int res[4];
        *    } b;
        *  } a;
-       *  
+       *
        *  a.b.res[1] = 3;
        */
       found = true;
       fld_info.New_offset( offset - ofst );
 
       TY_KIND ty_kind = TY_kind(FLD_type(fld));
-      FmtAssert((ty_kind== KIND_STRUCT) || (ty_kind == KIND_ARRAY), 
+      FmtAssert((ty_kind== KIND_STRUCT) || (ty_kind == KIND_ARRAY),
         ("GetFieldId: this field should be a struct or an array"));
       break;
     } else {
@@ -4909,7 +4909,7 @@ FLDINFO GetFieldId(WN *wn, TY_IDX struct_ty_idx, WN_OFFSET offset) {
     Is_Trace(Tracing_enabled, (TFile, "Get field_id=%lld for : ", field_id));
     Is_Trace_cmd(Tracing_enabled, fdump_tree(TFile, wn));
   } else {
-    // can't found this field 
+    // can't found this field
     // struct A { int arr[10]; }; int *b = A.arr[3];
     field_id = 0;
     Is_Trace(Tracing_enabled, (TFile, "Get field_id failed"));
@@ -4921,7 +4921,7 @@ FLDINFO GetFieldId(WN *wn, TY_IDX struct_ty_idx, WN_OFFSET offset) {
 
 BOOL
 WHIRL2llvm::Gen_displacement(WN *wn, LVVAL **base) {
-  FmtAssert((*base)->getType()->isOpaquePointerTy(), 
+  FmtAssert((*base)->getType()->isOpaquePointerTy(),
     ("Gen_displacement: Type of the base should be OpaquePointerTy"));
 
   INT offset = WN_offset(wn);
@@ -4996,7 +4996,7 @@ LVVAL *WHIRL2llvm::EXPR2llvm(WN *wn, WN *parent) {
     INT32  labnum = WN_label_number(wn);
     char*  labname = LABEL_NUMBER2name(labnum);
     W2LBB* targbb = Get_w2lbb(labname);
-    
+
     res = targbb->Blkaddr();
     break;
   }
@@ -5097,7 +5097,7 @@ LVVAL *WHIRL2llvm::EXPR2llvm(WN *wn, WN *parent) {
     TYPE_ID mtype = WN_rtype(wn);
     TYPE_ID dtype = WN_desc(wn);
     LVTY *resty = Wty2llvmty(mtype, WN_ty(wn));
-    
+
     if (MTYPE_is_float(dtype)) {
       if (resty->isIntegerTy()) {
         if (MTYPE_is_signed(mtype)) {
@@ -5218,7 +5218,7 @@ LVVAL *WHIRL2llvm::EXPR2llvm(WN *wn, WN *parent) {
     auto b_offset = WN_bit_offset(wn);
     auto sub_expr = EXPR2llvm(WN_kid0(wn));
     if (b_offset > 0) {
-      sub_expr = Lvbuilder()->CreateAShr(sub_expr, 
+      sub_expr = Lvbuilder()->CreateAShr(sub_expr,
         llvm::ConstantInt::get(sub_expr->getType(), b_offset));
     }
     uint64_t mask = (1ULL << b_size) - 1;
@@ -5249,11 +5249,11 @@ LVVAL *WHIRL2llvm::EXPR2llvm(WN *wn, WN *parent) {
       res = Lvbuilder()->CreateMul(lhs, rhs);
     } else if (MTYPE_is_float(resid)) {
       res =  Lvbuilder()->CreateFMul(lhs, rhs);
-    } else {      
+    } else {
       FmtAssert(FALSE, ("EXPR2llvm: can't handle this type for OPR_MPY"));
     }
     break;
-  } 
+  }
   case OPR_DIV: {
     LVVAL *div = nullptr;
     TYPE_ID resid = WN_rtype(wn);
@@ -5298,14 +5298,14 @@ LVVAL *WHIRL2llvm::EXPR2llvm(WN *wn, WN *parent) {
     FmtAssert(FALSE, ("WHIRL2llvm::EXPR2llvm, operator %s not handled", OPERATOR2name(opr)));
     break;
   case OPR_MIN:
-  case OPR_MAX:  
+  case OPR_MAX:
   case OPR_BAND:
   case OPR_BIOR:
   case OPR_BXOR:
   case OPR_SHL:
   case OPR_ASHR:
   case OPR_LSHR:
-  case OPR_ADD: 
+  case OPR_ADD:
   case OPR_COMPOSE_BITS: {
     res = CreateBinary(wn);
     break;
@@ -5335,7 +5335,7 @@ LVVAL *WHIRL2llvm::EXPR2llvm(WN *wn, WN *parent) {
     FmtAssert(FALSE, ("WHIRL2llvm::EXPR2llvm, operator %s not handled", OPERATOR2name(opr)));
     break;
   }
-  case OPR_SELECT: { 
+  case OPR_SELECT: {
     LVVAL *cond = EXPR2llvm(WN_kid0(wn));
     LVVAL *true_val = EXPR2llvm(WN_kid1(wn));
     LVVAL *false_val = EXPR2llvm(WN_kid2(wn));
@@ -5460,10 +5460,10 @@ WHIRL2llvm::STMT2llvm(WN *wn, W2LBB *lvbb)
   }
   case OPR_XGOTO: {
     INT32 num_entries = WN_num_entries(wn);
-    
+
     // create offset of jump table
     LVVAL *offset = EXPR2llvm(WN_kid0(wn));
-    FmtAssert(offset->getType()->isIntegerTy(), 
+    FmtAssert(offset->getType()->isIntegerTy(),
       ("WHIRL2llvm::STMT2llvm: offset type is not integer"));
 
     WN *block = WN_switch_table(wn);
@@ -5608,13 +5608,13 @@ WHIRL2llvm::STMT2llvm(WN *wn, W2LBB *lvbb)
     //
     // Identify the Function Object of the callee.
     // The WN_st of the call node should point to the function declaration
-    // Since WHIRL does not maintain the declaration info fully, the type of 
+    // Since WHIRL does not maintain the declaration info fully, the type of
     // arguments are collected from the actual argument list in this call node.
     // TODO: WHIRL2llvm to cache function delcarations
-    
+
     // set flag
     Has_call_processed(TRUE);
-    
+
     LVFUNC   *func = GetFunction(wn);
     LVFUNCTY *lvfuncty = func->getFunctionType();
 
@@ -5689,19 +5689,19 @@ WHIRL2llvm::STMT2llvm(WN *wn, W2LBB *lvbb)
          * }
          *
          * the WHIRL that calling "f(int, float, foat)":
-         * 
+         *
          *    I4I4LDID 49 <1,4,.preg_I4> T<4,.predef_I4,4> # a
-         *  I4PARM 2 T<4,.predef_I4,4> #  by_value 
+         *  I4PARM 2 T<4,.predef_I4,4> #  by_value
          *   F4F4LDID 50 <1,10,.preg_F4> T<10,.predef_F4,4> # b
-         *  F4PARM 2 T<10,.predef_F4,4> #  by_value 
+         *  F4PARM 2 T<10,.predef_F4,4> #  by_value
          *   F4F4LDID 51 <1,10,.preg_F4> T<10,.predef_F4,4> # c
-         *  F4PARM 2 T<10,.predef_F4,4> #  by_value 
+         *  F4PARM 2 T<10,.predef_F4,4> #  by_value
          * MCALL 126 <1,52,_Z1fiff> # flags 0x7e {line: 1/39}
-         * 
+         *
          * # save (int)f1 and (float)f2
          *  I8I8LDID 1 <1,5,.preg_I8> T<5,.predef_I8,8> # $1
          * I8STID 0 <2,5,_temp_.call0> T<5,.predef_I8,8> {line: 1/39}
-         * 
+         *
          * # save (float)f3
          *  F4F4LDID 17 <1,11,.preg_F8> T<10,.predef_F4,4> # $f0
          * F4STID 52 <1,10,.preg_F4> T<10,.predef_F4,4> # _temp_.call0 {line: 1/39}
@@ -5740,7 +5740,7 @@ WHIRL2llvm::STMT2llvm(WN *wn, W2LBB *lvbb)
   // ===========================================================================
   case OPR_ICALL: {
     // TODO: OPR_ICALL is slightly different from OPR_CALL, seek refactor oppo!!
-    
+
     // set flag
     Has_call_processed(TRUE);
 
@@ -5860,7 +5860,7 @@ WHIRL2llvm::STMT2llvm(WN *wn, W2LBB *lvbb)
           else break;
         }
         FmtAssert(RETURN_INFO_count(ret_info) == elems.size(),
-          ("STMT2llvm: elems size(%d) is different with return type%(%d)", 
+          ("STMT2llvm: elems size(%d) is different with return type%(%d)",
             elems.size(), RETURN_INFO_count(ret_info)));
 
         auto struct_ty = llvm::cast<llvm::StructType>(ret_type);
@@ -5877,7 +5877,7 @@ WHIRL2llvm::STMT2llvm(WN *wn, W2LBB *lvbb)
 
         LVVAL *ret_struct = Lvbuilder()->CreateLoad(tmp_struct->getAllocatedType(), tmp_struct);
         Lvbuilder()->CreateRet(ret_struct);
-        
+
       } else if (ret_type->isVoidTy()) {
         Lvbuilder()->CreateRetVoid();
       } else {
@@ -5904,7 +5904,7 @@ WHIRL2llvm::STMT2llvm(WN *wn, W2LBB *lvbb)
       }
     }
     break;
-  }     
+  }
   case OPR_COMMENT: {
     break; // skip it
   }
@@ -5915,16 +5915,16 @@ WHIRL2llvm::STMT2llvm(WN *wn, W2LBB *lvbb)
     // get potential dest arrays from WN_kids(wn)
     FmtAssert(FALSE, ("STMT2llvm: operator %s works in progress", OPERATOR2name(opr)));
     break;
-  } 
+  }
   case OPR_REGION: {
     if (WN_region_kind(wn) == REGION_KIND_TRY) {
-      
+
 #if 1 // skip region now
       WN *try_body = WN_region_body(wn);
       char *try_labname = LABEL_NUMBER2name(WN_label_number(try_body));
       W2LBB *try_w2llbb = Get_w2lbb(try_labname);
 
-      // handle 
+      // handle
       BLOCK2llvm(try_body, try_w2llbb);
 
       WN *pragma = WN_region_pragmas(wn);
@@ -6136,7 +6136,7 @@ WHIRL2llvm::Lower_puwn(PU_Info *pu_info, WN *wn)
       LOWER_QUAD     |
       LOWER_MLDID_MSTID |
       LOWER_MADD;
-    
+
     wn = WN_Lower(wn, actions, NULL, "WHIRL2llvm lowering Middle Level Whirl");
   }
 
@@ -6322,7 +6322,7 @@ LVCONST *WHIRL2llvm::INITV2llvm4pad(const INITV &initv, TY_IDX ty_idx) {
   } else {
     FmtAssert(ty_kind == KIND_SCALAR,
       ("INITV2llvm4pad: ty_kind(%u) should be KIND_SCALAR(%u)", ty_kind, KIND_SCALAR));
-    FmtAssert(MTYPE_is_integral(TY_mtype(ty_idx)), 
+    FmtAssert(MTYPE_is_integral(TY_mtype(ty_idx)),
       ("INITV2llvm4pad: ty_mtype(%u) should be integer", TY_mtype(ty_idx)));
 
     LVTY *pad_ty = Wty2llvmty(TY_mtype(ty_idx), ty_idx);
@@ -6512,12 +6512,12 @@ LVCONST *WHIRL2llvm::INITV2llvm(const INITV &initv, TY_IDX ty_idx) {
       labels.push_back(LVBLKADDR::get(Cur_lvfunc(), targbb->Lvbb()));
       initv0 = INITV_next(initv0);
     }
-    
+
     llvm::ArrayType *array_ty = llvm::ArrayType::get(labels[0]->getType(), labels.size());
     return llvm::ConstantArray::get(array_ty, labels);
   }
-  
-  default: 
+
+  default:
     FmtAssert(FALSE,
         ("INITV2llvm: create init kind %d not supported, failed ty_idx = 0x%x", initv_kind, ty_idx));
     break;
@@ -6542,10 +6542,10 @@ void INITO2llvm::operator() (UINT idx, INITO *inito) const {
   if (st->storage_class == SCLASS_EH_REGION || st->storage_class == SCLASS_EH_REGION_SUPP) {
     DevWarn("INITO2llvm::operator(): skipping exception region %s", ST_name(st));
     return;
-  } 
+  }
 
   llvm::Constant *init = whirl2llvm->INITV2llvm(initv, ST_type(st));
-  
+
   switch (st->storage_class) {
     case SCLASS_FSTATIC:
     case SCLASS_DGLOBAL: {
@@ -6598,7 +6598,7 @@ void WHIRL2llvm::FUNC_ENTRY2llvm(PU_Info *pu, WN *wn) {
   Builder(&w2lbuilder); // Create_w2lbb need this definition
 
   W2LBB     *entry_w2lbb = Create_w2lbb((char*)"entry");
-  LVBB      *entry_bb = entry_w2lbb->Lvbb(); 
+  LVBB      *entry_bb = entry_w2lbb->Lvbb();
   Lventry(entry_bb);
   LVBUILDER  lvbuilder(entry_bb);
   w2lbuilder.Builder(&lvbuilder);
@@ -6680,7 +6680,7 @@ void WHIRL2llvm::Create_inc_dirs() {
 
   STRVEC &inc_dirs = Inc_dirs();
   inc_dirs.push_back(""); // the first element is dummy
-   
+
   if (!DST_IS_NULL(idx)) {
      dir = DST_DIR_IDX_TO_PTR(idx);
   } else {
@@ -6692,7 +6692,7 @@ void WHIRL2llvm::Create_inc_dirs() {
 
     // DST_put_string_attribute(" path", DST_INCLUDE_DIR_path(dir));
     inc_dirs.push_back(DST_STR_IDX_TO_PTR(DST_INCLUDE_DIR_path(dir)));
-    
+
     idx = DST_INCLUDE_DIR_next(dir);
     if (!DST_IS_NULL(idx)) {
 	    dir = DST_DIR_IDX_TO_PTR(idx);
@@ -6709,7 +6709,7 @@ void WHIRL2llvm::Create_w2lfiles() {
 
   W2LFILEVEC &w2lfiles = W2L_files();
   w2lfiles.push_back(W2LFILE(NULL)); // the first element is dummy
-   
+
   if (!DST_IS_NULL(idx))
      f = DST_FILE_IDX_TO_PTR(idx);
   else
@@ -6748,9 +6748,9 @@ void WHIRL2llvm::Init_debug_info() {
 
   LVDIFILE *di_file = W2L_files()[1].Lvdi_file();
   // LVDICU *cu = this->DIBuilder()->createCompileUnit(
-  //   DW_LANG_C, 
+  //   DW_LANG_C,
   //   di_file,
-  //   producer, 
+  //   producer,
   //   1, "", 0
   // );
   // this->DICU(cu);
@@ -7046,7 +7046,7 @@ int main (INT argc, char *argv[])
       } else if (strncmp(argv[binarg], "-bdce", 5) == 0) {
         ENABLE_BDCE = true;
       } else if (strncmp(argv[binarg], "-all", 4) == 0) {
-        ENABLE_MEM2REG = ENABLE_SIMP_CFG = ENABLE_SIMP_CFG = 
+        ENABLE_MEM2REG = ENABLE_SIMP_CFG = ENABLE_SIMP_CFG =
         ENABLE_GVN = ENABLE_INST_COMBINE = ENABLE_DGE = ENABLE_BDCE = true;
       } else if (strncmp(argv[binarg], "-skip_before", 12) == 0) {
         skip_before = atoi(argv[++binarg]);
@@ -7083,7 +7083,7 @@ int main (INT argc, char *argv[])
  */
 // =============================================================================
 void
-Signal_Cleanup (INT sig) { 
+Signal_Cleanup (INT sig) {
 }
 const char *
 Host_Format_Parm (INT kind, MEM_PTR parm)
