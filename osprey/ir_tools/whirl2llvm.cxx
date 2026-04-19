@@ -6922,6 +6922,9 @@ ir_b2a (char *global_file,
       out_file = std::string(input_file) + ".ll";
     } else {
       if (strcmp(OUT_FILE, "-") == 0) {
+        if (llvm::verifyModule(*driver.Module(), &llvm::errs())) {
+          FmtAssert(FALSE, ("verifyModule failed"));
+        }
         driver.Module()->print(llvm::outs(), nullptr);
         return;
       } else {
