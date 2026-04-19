@@ -7062,7 +7062,7 @@ int main (INT argc, char *argv[])
         testing_mode |= atoi(argv[++binarg]);
       } else if (strncmp(argv[binarg], "-o", 2) == 0) {
         char *filename = argv[++binarg];
-        OUT_FILE = new char[strlen(filename)];
+        OUT_FILE = new char[strlen(filename) + 1];
         strcpy(OUT_FILE, filename);
       } else {
         // can't match
